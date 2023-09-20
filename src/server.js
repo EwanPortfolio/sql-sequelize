@@ -14,6 +14,8 @@ const connection = require("./db/connection");
 const Book = connection.define("Book", {
         title:{
             type: DataTypes.STRING,
+            unique : true,
+            allowNull: false,
         },
         author: {
             type: DataTypes.STRING,
@@ -23,12 +25,21 @@ const Book = connection.define("Book", {
         }
 });
 
+const syncTables = () => {
+    Book.sync();
+};
+
+
+
+
+
 app.get("/health", (req, res) => {
     res.status(200).json({ message: "API is healthy"})
 })
 
 
 app.listen(port, () => {
+    syncTables();
     console.log(`App is listening on port ${port}`);
 })
 
