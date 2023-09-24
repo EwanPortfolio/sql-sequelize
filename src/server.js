@@ -1,45 +1,30 @@
 require("dotenv").config();
+const router = require("./books/routes");
+const authorRouter = require("./author/routes")
+const Book = require("./books/model")
+const Author = require("./author/model")
 
 const express = require("express");
-const { DataTypes } = require("sequelize");
-const connection = require("./db/connection");
+
+
 
 const port = process.env.PORT || 5001;
 const app = express();
 
 app.use(express.json());
 
-const Book = connection.define("Book", {
-        title:{
-            type: DataTypes.STRING,
-            unique : true,
-            allowNull: false,
-        },
-        author: {
-            type: DataTypes.STRING,
-        },
-        genre: {
-            type: DataTypes.STRING,
-        }
-});
+app.use("/books", router)
+
+
 
 const syncTables = () => {
-    Book.sync();
+    Book.hasOne(Author);
+    Author.hasMany(Book);
+    
+    Book.sync({ alter: true });
+    Author.sync();
 };
 
-app.post("/addbook", async (req, res) => {
-   console.log(req.body);
-   const book = await Book.create({
-        title: req.body.title,
-        author: req.body.author,
-        genre: req.body.genre,
-   })
-   const successResponse = {
-        book: book,
-        message: "book Created",
-   };
-        res.status(201).json(successResponse);
-});
 
 app.get("/health", (req, res) => {
     res.status(200).json({ message: "API is healthy"})
