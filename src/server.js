@@ -1,9 +1,12 @@
 require("dotenv").config();
 const router = require("./books/routes");
+const authorRouter = require("./author/routes")
 const Book = require("./books/model")
-
+const Author = require("./author/model")
 
 const express = require("express");
+
+
 
 const port = process.env.PORT || 5001;
 const app = express();
@@ -15,30 +18,12 @@ app.use("/books", router)
 
 
 const syncTables = () => {
-    Book.sync();
+    Book.hasOne(Author);
+    Author.hasMany(Book);
+    
+    Book.sync({ alter: true });
+    Author.sync();
 };
-
-   
-//Author
-
-// const Author = connection.define("Author", {
-//     Name:{
-//         type: DataTypes.STRING,
-//         unique : true,
-//         allowNull: false,
-//     }});
-
-// app.post("/addAuthor", async (req, res) => {
-//     const addAuthor = await Author.create({
-//         Name: req.body.Name
-//     })
-//     const successResponse = {
-//         Author: addAuthor,
-//         message: "Author Created",
-//    };
-//         res.status(200).json(successResponse);
-// });
-
 
 
 app.get("/health", (req, res) => {

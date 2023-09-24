@@ -2,12 +2,14 @@ const { Router } = require("express")
 const router = Router()
 
 const Book = require("./model")
+const Author = require("../author/model")
 
 router.post("/addbook", async (req, res) => {
+    const author = await Author.findOne({ where: { author: req.body.author}})
     console.log(req.body);
     const book = await Book.create({
          title: req.body.title,
-         author: req.body.author,
+         authorId: author.id,
          genre: req.body.genre,
     })
     const successResponse = {
